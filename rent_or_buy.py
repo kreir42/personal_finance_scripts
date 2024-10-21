@@ -58,7 +58,7 @@ for i in range(1,sim_time+1):
         buy_value[i] += 12*(higher_cost[i]-buy_cost[i])
     if rent_cost[i]<higher_cost[i]:
         rent_value[i] += 12*(higher_cost[i]-rent_cost[i])
-    if rentbuycash_year==0 and rent_value[i] >= home_value+buying_fees:
+    if rentbuycash_year==0 and rent_value[i] >= home_value*(1+home_appreciation)**(i-1)+buying_fees:
         rentbuycash_year = i
 for i in range(1,sim_time+1):
     if i<rentbuycash_year:
@@ -66,7 +66,7 @@ for i in range(1,sim_time+1):
         rentbuycash_value[i] = rent_value[i]
     elif i==rentbuycash_year:
         rentbuycash_cost[i] = owning_cost[i]
-        rentbuycash_value[i] = rent_value[i]-home_value-buying_fees
+        rentbuycash_value[i] = rent_value[i]-home_value*(1+home_appreciation)**(i-1)-buying_fees
     else:
         rentbuycash_cost[i] = owning_cost[i]
         rentbuycash_value[i] = rentbuycash_value[i-1]*(1+investment_returns)
