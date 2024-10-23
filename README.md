@@ -14,3 +14,6 @@ This assumes all options are always affordable.
 ## DCA_backtesting.py
 Backtests Dollar Costs Averaging a constant inflation-adjusted amount over time (plus a 'hold' time with no contributions) into a portfolio given historical data.
 Price and inflation data are located in the price_data folder in csv format. Price data must not be inflation adjusted.
+
+## investment_needs.py
+Shows the required monthly investment to achieve a certain portfolio value depending on the time and the annual returns.
