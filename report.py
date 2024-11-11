@@ -1,4 +1,5 @@
 base_currency = 'EUR'
+cpi_filename = 'EU_cpi.csv'
 
 from datetime import datetime, timezone, timedelta
 import matplotlib.pyplot as plt
@@ -25,7 +26,7 @@ date_range = pd.date_range(start=start_date, end=now, freq='D')
 df = pd.DataFrame(index=date_range)
 
 #inflation
-cpi = pd.read_csv("price_data/cpi.csv", index_col=0, names=['Date','CPI'], parse_dates=True)
+cpi = pd.read_csv("price_data/"+cpi_filename, index_col=0, names=['Date','CPI'], parse_dates=True)
 cpi = cpi.loc[start_date-timedelta(days=30):]
 cpi = cpi.resample('D').agg({'CPI': 'last',})
 cpi = cpi.interpolate(method='linear')
@@ -94,6 +95,7 @@ df['IRR'] = (pow(df['IRR']+1,365.24)-1)*100 #go from daily to yearly percentage
 
 print(df)
 plt.plot(df.index, df['IRR'])
+plt.tight_layout()
 plt.xlabel('Date')
 plt.ylabel('IRR (%)')
 plt.grid(True)

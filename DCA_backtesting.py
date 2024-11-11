@@ -46,7 +46,7 @@ def calculate_IRR(final_value):
         return np.nan
 
 #inflation
-data = pd.read_csv("price_data/cpi.csv", index_col=0, names=['Date','CPI'])
+data = pd.read_csv("price_data/US_cpi.csv", index_col=0, names=['Date','CPI'])
 data.index = pd.to_datetime(data.index)
 data = data.resample('ME').agg({'CPI': 'last',}).dropna()
 final_cpi = data['CPI'].iloc[-1]
