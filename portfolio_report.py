@@ -17,8 +17,8 @@ def calculate_IRR(final_value, invest_series):
     except:
         return np.nan
 
-transfers = pd.read_csv("transfers.csv", index_col=0, header=0, parse_dates=True)
-trades = pd.read_csv("trades.csv", index_col=0, header=0, parse_dates=True)
+transfers = pd.read_csv("portfolio/transfers.csv", index_col=0, header=0, parse_dates=True)
+trades = pd.read_csv("portfolio/trades.csv", index_col=0, header=0, parse_dates=True)
 
 start_date = transfers.index[0]
 now = datetime.now()
