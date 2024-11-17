@@ -95,11 +95,16 @@ for date, row in df.iterrows():
 df['IRR'] = (pow(df['IRR']+1,365.24)-1)*100 #go from daily to yearly percentage
 
 print(df)
-plt.plot(df.index, df['IRR'])
+fig, ax1 = plt.subplots()
+ax2 = ax1.twinx()
+ax1.plot(df.index, df['IRR'], label='IRR', color='blue')
+ax2.plot(df.index, df['value'], label='Value', color='black', linestyle='--', linewidth=0.85)
 plt.tight_layout()
-plt.xlabel('Date')
-plt.ylabel('IRR (%)')
-plt.grid(True)
+ax1.set_xlabel('Date')
+ax1.set_ylabel('IRR (%)')
+ax2.set_ylabel(f"Value ({base_currency})")
+ax1.grid(True)
+fig.legend()
 plt.show()
 
 #Report IRR per symbol
