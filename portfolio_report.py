@@ -11,7 +11,8 @@ import re
 
 def calculate_IRR(final_value, invest_series):
     try:
-        copy = [-i for i in invest_series]
+        copy = np.array(invest_series)
+        copy *= -1
         copy[-1] += final_value
         return npf.irr(copy)
     except:
@@ -100,3 +101,20 @@ plt.xlabel('Date')
 plt.ylabel('IRR (%)')
 plt.grid(True)
 plt.show()
+
+#Report IRR per symbol
+print()
+print('IRR per symbol:')
+for symbol in symbols:
+    money_flow = pd.DataFrame(index=date_range)
+    money_flow['value'] = 0.0
+    for index, row in trades.iterrows():
+        date = pd.to_datetime(index).floor('D')
+        if row['symbol']!=symbol:
+            continue
+        money_flow.loc[date, 'value'] -= row['procceeds']+row['commission']*df.loc[date, 'Inflation adjustment']
+        if row['currency']!=base_currency:
+            money_flow.loc[date, 'value'] *= df.loc[date, row['currency']+'_price']
+    IRR = calculate_IRR(df[symbol].iat[-1]*df[symbol+'_price'].iat[-1], money_flow['value'])
+    IRR = (pow(IRR+1,365.24)-1)*100 #go from daily to yearly percentage
+    print(f"    {symbol}: {IRR:.2f}%")
