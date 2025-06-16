@@ -102,12 +102,12 @@ df['value'] *= df['Inflation adjustment']
 #calculate IRR
 df['Benchmark IRR'] = 0.0
 df['IRR'] = 0.0
+daily_transfers = transfers.groupby(transfers.index)['amount'].sum()
+#join the sums to the main df and calculate the inflation-adjusted value
+df['adjusted_transfer'] = df.join(daily_transfers, how='left').fillna(0)['amount'] * df['Inflation adjustment']
 transfers_array = []
 for date, row in df.iterrows():
-    try:
-        transfers_array.append(transfers.loc[date, 'amount']*df.loc[date, 'Inflation adjustment'])
-    except:
-        transfers_array.append(0)
+    transfers_array.append(row['adjusted_transfer'])
     df.loc[date, 'Benchmark IRR'] = calculate_IRR(df.loc[date, 'Benchmark value'], transfers_array)
     df.loc[date, 'IRR'] = calculate_IRR(df.loc[date, 'value'], transfers_array)
 df['Benchmark IRR'] = (pow(df['Benchmark IRR']+1,365.24)-1)*100 #go from daily to yearly percentage
@@ -158,6 +158,6 @@ print()
 print()
 current_value = df['value'].iat[-1]
 print(f"Current value:   {current_value:.2f}"+base_currency_symbol)
-print(f"Net flow:        {df['Raw net flow'].iat[-1]:.2f}"+base_currency_symbol+f"     -->     Inflation adjusted: {df['Net flow'].iat[-1]:.2f}"+base_currency_symbol)
+print(f"Net flow:        {-df['Raw net flow'].iat[-1]:.2f}"+base_currency_symbol+f"     -->     Inflation adjusted: {-df['Net flow'].iat[-1]:.2f}"+base_currency_symbol)
 print(f"Current P&L:     {current_value-df['Raw net flow'].iat[-1]:.2f}"+base_currency_symbol+f"     -->     Inflation adjusted: {current_value-df['Net flow'].iat[-1]:.2f}"+base_currency_symbol)
 print(f"Total fees paid: {-total_commissions_raw:.2f}"+base_currency_symbol+f"     -->     Inflation adjusted: {-total_commissions:.2f}"+base_currency_symbol)
