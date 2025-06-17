@@ -132,9 +132,9 @@ plt.show()
 
 total_commissions = 0
 total_commissions_raw = 0
+symbol_details = []
 #Report IRR per symbol
 print()
-print('IRR per symbol:')
 for symbol in symbols:
     money_flow = pd.DataFrame(index=date_range)
     money_flow['value'] = 0.0
@@ -151,12 +151,28 @@ for symbol in symbols:
         else:
             total_commissions_raw += row['commission']
             total_commissions += row['commission']*df.loc[date, 'Inflation adjustment']
-    IRR = calculate_IRR(df[symbol].iat[-1]*df[symbol+'_price'].iat[-1], money_flow['value'])
+    final_symbol_quantity = df[symbol].iat[-1]
+    final_symbol_value = final_symbol_quantity*df[symbol+'_price'].iat[-1]
+    IRR = calculate_IRR(final_symbol_value, money_flow['value'])
     IRR = (pow(IRR+1,365.24)-1)*100 #go from daily to yearly percentage
-    print(f"    {symbol}: {IRR:.2f}%")
-print()
-print()
+    symbol_details.append({
+        'Symbol': symbol,
+        '% of Total': 0,
+        'Value': final_symbol_value,
+        'IRR': IRR,
+        'Quantity': final_symbol_quantity
+    })
 current_value = df['value'].iat[-1]
+report_df = pd.DataFrame(symbol_details)
+report_df['% of Total'] = (report_df['Value'] / current_value) * 100
+report_df.sort_values(by='% of Total', ascending=False, inplace=True)
+#formatting
+report_df['Value'] = report_df['Value'].map(lambda x: f"{x:,.2f}{base_currency_symbol}")
+report_df['% of Total'] = report_df['% of Total'].map('{:.2f}%'.format)
+report_df['IRR'] = report_df['IRR'].map(lambda x: f"{x:.2f}%" if pd.notna(x) else "N/A")
+print(report_df.to_string(index=False))
+print()
+print()
 print(f"Current value:   {current_value:.2f}"+base_currency_symbol)
 print(f"Net flow:        {-df['Raw net flow'].iat[-1]:.2f}"+base_currency_symbol+f"     -->     Inflation adjusted: {-df['Net flow'].iat[-1]:.2f}"+base_currency_symbol)
 print(f"Current P&L:     {current_value-df['Raw net flow'].iat[-1]:.2f}"+base_currency_symbol+f"     -->     Inflation adjusted: {current_value-df['Net flow'].iat[-1]:.2f}"+base_currency_symbol)
