@@ -133,7 +133,7 @@ plt.show()
 total_commissions = 0
 total_commissions_raw = 0
 symbol_details = []
-#Report IRR per symbol
+#report data per symbol
 print()
 for symbol in symbols:
     money_flow = pd.DataFrame(index=date_range)
